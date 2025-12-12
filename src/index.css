@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Cinzel";
+  --font-serif: "Cormorant Garamond";
+  --font-sans: "Manrope";
+  --font-script: "Corinthia";
+
+  --color-void: #030105;
+  --color-mist: #1a1625;
+  --color-gold: #d4af37;
+  --color-crimson: #660f18;
+  --color-lilac: #d8b4fe;
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-slow: pulse 8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-spin-slow: spin 30s linear infinite;
+  --animate-fade-in-up: fadeInUp 2s ease-out forwards;
+
+  @keyframes fadeInUp {
+    0%: {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px) rotate(1deg);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+}
+
+@import './assets/css/landing.css';
+@import './assets/css/auth.css';
