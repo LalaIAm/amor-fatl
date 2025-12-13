@@ -26,7 +26,7 @@ jobs:
       - name: Save build folder 
         uses: actions/upload-artifact@v4
         with:
-          name: build
+          name: dist
           if-no-files-found: error 
           path: dist
 
@@ -40,7 +40,7 @@ jobs:
         - name: Download the build folder 
           uses: actions/download-artifact@v4 
           with:
-            name: build
+            name: dist
 
         - name: Cypress run 
           uses: cypress-io/github-action@v6
@@ -60,7 +60,7 @@ jobs:
       - name: Download the build folder
         uses: actions/download-artifact@v4 
         with:
-          name: build 
+          name: dist 
 
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
