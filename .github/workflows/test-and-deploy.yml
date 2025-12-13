@@ -11,61 +11,77 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout 
-        uses: actions/checkout@v4 
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Cypress install
-        uses: cypress-io/github-action@v6 
+        uses: cypress-io/github-action@v6
         with:
-          runTests: false 
-          build: npm run build 
+          runTests: false
+          build: npm run build
 
-      - name: Save build folder 
+      - name: Save build folder
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          if-no-files-found: error 
+          if-no-files-found: error
           path: dist
 
   cypress-run:
-      runs-on: ubuntu-latest
-      needs: build
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v4 
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-        - name: Download the build folder 
-          uses: actions/download-artifact@v4 
-          with:
-            name: dist
+      - name: Download the build folder
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: .
 
-        - name: Cypress run 
-          uses: cypress-io/github-action@v6
-          with:
-            record: true 
-            start: npm run preview
-          env:
-             CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          record: true
+          start: npm run preview
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
 
   firebase-deploy:
     runs-on: ubuntu-latest
     needs: build
-    steps: 
+    steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
       - name: Download the build folder
-        uses: actions/download-artifact@v4 
+        uses: actions/download-artifact@v4
         with:
-          name: dist 
+          name: dist
+          path: .
+
+      - name: Check Firebase service account secret is present
+        run: |
+          if [ -z "${{ secrets.FIREBASE_SERVICE_ACCOUNT_AMOR_FATL }}" ]; then
+            echo "Secret FIREBASE_SERVICE_ACCOUNT_AMOR_FATL is missing"; exit 1
+          else
+            echo "FIREBASE_SERVICE_ACCOUNT_AMOR_FATL secret found"
+          fi
+
+      - name: Show workspace and dist contents
+        run: |
+          echo "Workspace root:"
+          ls -la
+          echo "dist folder (if present):"
+          ls -la dist || echo "dist not found"
 
       - name: Deploy to Firebase
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_AMOR_FATL }}
-          channelId: live 
+          channelId: live
           projectId: amor-fatl
