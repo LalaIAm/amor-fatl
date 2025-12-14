@@ -1,8 +1,20 @@
-import React from "react";
-import {useNavigate} from 'react-router'
+import React, { useState } from "react";
+import { useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../../../store/auth/authSlice";
 
 const LoginForm = () => {
-    const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const { status, error } = useSelector((state) => state.auth);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    dispatch(loginUser({ email, password }));
+  };
   return (
     <div className="w-full lg:w-1/2 relative bg-void flex flex-col justify-center items-center h-full px-6 sm:px-12 lg:px-24 border-r border-white/5">
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
@@ -41,7 +53,7 @@ const LoginForm = () => {
             <div className="h-px bg-white/10 w-16"></div>
           </div>
         </div>
-        <form className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-4">
           <div className="group relative">
             <label className="block text-[10px] uppercase tracking-widest text-gray-500 mb-1 ml-1 group-focus-within:text-gold transition-colors">
               Astral Contact
@@ -51,6 +63,9 @@ const LoginForm = () => {
                 type="email"
                 className="mystic-input w-full p-3 rounded-sm text-white text-sm placeholder-gray-600 pl-10 bg-black/40"
                 placeholder="email@universe.com"
+                required
+                onChange={(e) => setEmail(e.target.value)}
+                value={email}
               />
               <i className="fa-regular fa-envelope absolute left-3 top-3.5 text-gray-500"></i>
             </div>
@@ -73,6 +88,9 @@ const LoginForm = () => {
                 type="password"
                 className="mystic-input w-full p-3 rounded-sm text-white text-sm placeholder-gray-600 pl-10 bg-black/40"
                 placeholder="••••••••"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
               />
               <i className="fa-solid fa-key absolute left-3 top-3.5 text-gray-500 text-xs text-opacity-70"></i>
               <button
@@ -101,13 +119,17 @@ const LoginForm = () => {
           <button
             type="submit"
             className="w-full bg-white text-black font-bold tracking-widest py-3 rounded-sm hover:bg-gold transition-colors duration-500 relative overflow-hidden group mt-2"
+            disabled={status === "loading"}
           >
-            <span className="relative z-10">ENTER THE VOID</span>
+            <span className="relative z-10">
+              {status === "loading" ? "Shuffling Cards" : "Log In"}
+            </span>
             <div className="absolute inset-0 bg-crimson transform translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
             <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/30 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
           </button>
+          {error && <p style={{ color: "red" }}>{error.message}</p>}
         </form>
-        
+
         <div className="relative flex py-6 items-center">
           <div className="grow border-t border-white/5"></div>
           <span className="shrink-0 mx-4 text-gray-600 text-[10px] uppercase tracking-widest">
@@ -134,8 +156,8 @@ const LoginForm = () => {
             Not yet initiated?
             <a
               href="#"
-                          className="font-script text-2xl text-gold hover:text-white transition-colors ml-2 relative top-1"
-                          onClick={() => navigate('/register')}
+              className="font-script text-2xl text-gold hover:text-white transition-colors ml-2 relative top-1"
+              onClick={() => navigate("/register")}
             >
               Manifest Account
             </a>
